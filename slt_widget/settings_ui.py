@@ -33,7 +33,12 @@ class SettingsWindow(tk.Toplevel):
         super().__init__(parent_main)
         self.parent_main = parent_main
         self.title("Settings - Data Widget")
-        self.geometry("500x350")
+        w, h = 500, 350
+        sw = self.winfo_screenwidth()
+        sh = self.winfo_screenheight()
+        x = (sw - w) // 2
+        y = (sh - h) // 2
+        self.geometry(f"{w}x{h}+{x}+{y}")
         self.resizable(False, False)
         
         # Load theme
@@ -61,11 +66,15 @@ class SettingsWindow(tk.Toplevel):
         self._build_tabs()
         
         # Open default tab
-        self.show_tab("General")
+        if not CFG.SettingsManager.get("slt_email"):
+            self.show_tab("Account")
+        else:
+            self.show_tab("General")
         
     def _build_nav(self):
         t = self.parent_main.theme
         nav_items = [
+            ("👤 Account", "Account"),
             ("⚙ General", "General"),
             ("📊 Data Bars", "DataBars"),
             ("🔔 Notifications", "Notifications"),
@@ -83,6 +92,50 @@ class SettingsWindow(tk.Toplevel):
 
     def _build_tabs(self):
         t = self.parent_main.theme
+        
+        # -- Account Tab --
+        f_acc = tk.Frame(self.content_frame, bg=t["BG2"], padx=20, pady=20)
+        tk.Label(f_acc, text="SLT Account", font=("Segoe UI", 14, "bold"), bg=t["BG2"], fg=t["FG"]).pack(anchor="w", pady=(0, 15))
+        
+        tk.Label(f_acc, text="MySLT Email:", font=("Segoe UI", 10), bg=t["BG2"], fg=t["DIM"]).pack(anchor="w")
+        self.var_email = tk.StringVar(value=(CFG.SettingsManager.get("slt_email") or ""))
+        tk.Entry(f_acc, textvariable=self.var_email, bg=t["TRACK"], fg=t["FG"], font=("Segoe UI", 10)).pack(anchor="w", fill="x", pady=(0, 10))
+        
+        tk.Label(f_acc, text="MySLT Password:", font=("Segoe UI", 10), bg=t["BG2"], fg=t["DIM"]).pack(anchor="w")
+        self.var_pw = tk.StringVar(value="")
+        
+        pw_frame = tk.Frame(f_acc, bg=t["BG2"])
+        pw_frame.pack(anchor="w", fill="x", pady=(0, 10))
+        
+        self.ent_pw = tk.Entry(pw_frame, textvariable=self.var_pw, show="*", bg=t["TRACK"], fg=t["FG"], font=("Segoe UI", 10))
+        self.ent_pw.pack(side="left", fill="x", expand=True)
+        
+        self.btn_eye = tk.Label(pw_frame, text="👁", bg=t["BG2"], fg=t["DIM"], font=("Segoe UI", 12), cursor="hand2")
+        self.btn_eye.pack(side="right", padx=(5, 0))
+        
+        def _toggle_eye(e=None):
+            if self.ent_pw.cget("show") == "*":
+                self.ent_pw.config(show="")
+                self.btn_eye.config(fg=t["FG"])
+            else:
+                self.ent_pw.config(show="*")
+                self.btn_eye.config(fg=t["DIM"])
+                
+        self.btn_eye.bind("<Button-1>", _toggle_eye)
+        
+        tk.Label(f_acc, text="Landline Number (e.g. 011...):", font=("Segoe UI", 10), bg=t["BG2"], fg=t["DIM"]).pack(anchor="w")
+        self.var_landline = tk.StringVar(value=(CFG.SettingsManager.get("slt_landline") or ""))
+        tk.Entry(f_acc, textvariable=self.var_landline, bg=t["TRACK"], fg=t["FG"], font=("Segoe UI", 10)).pack(anchor="w", fill="x", pady=(0, 15))
+        
+        tk.Label(f_acc, text="We require your landline number to resolve your SLT Subscriber ID.\nWe do not collect any of this data.", font=("Segoe UI", 9), bg=t["BG2"], fg=t["DIM"], justify="left", wraplength=320).pack(anchor="w", pady=(0, 15))
+        
+        self.btn_save = tk.Button(f_acc, text="Save & Login", bg=t["ACCENT"], fg=t["BG2"], font=("Segoe UI", 10, "bold"), command=self._save_account, relief="flat", padx=10, pady=2)
+        self.btn_save.pack(anchor="w")
+        
+        self.lbl_status = tk.Label(f_acc, text="", font=("Segoe UI", 9), bg=t["BG2"], fg=t["FG"], wraplength=420, justify="left")
+        self.lbl_status.pack(anchor="w", pady=10)
+        
+        self.tabs["Account"] = f_acc
         
         # -- General Tab --
         f_gen = tk.Frame(self.content_frame, bg=t["BG2"], padx=20, pady=20)
@@ -168,6 +221,36 @@ class SettingsWindow(tk.Toplevel):
         CFG.SettingsManager.set("start_with_windows", start_win)
         CFG.SettingsManager.set("remember_position", self.var_pos.get())
         set_autostart(start_win)
+
+    def _save_account(self):
+        email = self.var_email.get().strip()
+        pw = self.var_pw.get()
+        ll = self.var_landline.get().strip()
+        
+        if not email or not ll:
+            self.lbl_status.config(text="Email and Landline required.", fg=self.parent_main.theme["BAD"])
+            return
+        if not pw:
+            # We must strictly demand a password on setup because keyring might be empty
+            self.lbl_status.config(text="Password is required.", fg=self.parent_main.theme["BAD"])
+            return
+            
+        CFG.SettingsManager.set("slt_email", email)
+        CFG.SettingsManager.set("slt_landline", ll)
+        
+        if pw:
+            CFG.store_password(email, pw)
+            
+        self.lbl_status.config(text="Testing connection...", fg=self.parent_main.theme["DIM"])
+        self.update_idletasks()
+        
+        import slt_api
+        try:
+            slt_api.login()
+            self.lbl_status.config(text="Login successful!", fg=self.parent_main.theme["OK"])
+            self.parent_main._do_refresh()
+        except Exception as e:
+            self.lbl_status.config(text=f"Error: {e}", fg=self.parent_main.theme["BAD"])
 
     def _on_bars_change(self):
         hidden = []

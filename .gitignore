@@ -1,5 +1,6 @@
 # Documentation / Unwanted info
 *.md
+!README.md
 
 # Python
 __pycache__/
@@ -38,3 +39,4 @@ venv.bak/
 *.swp
 .DS_Store
 Thumbs.db
+*.spec

@@ -103,10 +103,13 @@ def _jwt_exp(tok):
 
 
 def login():
-    pw = CFG.get_password()
+    email = (CFG.SettingsManager.get("slt_email") or "").strip()
+    if not email:
+        raise AuthError("No email configured. Please login via Settings.")
+    pw = CFG.get_password(email)
     if not pw:
-        raise AuthError("No password configured. See config.get_password().")
-    body = urllib.parse.urlencode({"username": CFG.USERNAME, "password": pw,
+        raise AuthError("No password found in keyring.")
+    body = urllib.parse.urlencode({"username": email, "password": pw,
                                    "channelID": "WEB"}).encode()
     st, j, raw = _req(f"{BASE}/Account/Login", body,
                       {"Content-Type": "application/x-www-form-urlencoded",
@@ -159,14 +162,20 @@ def _get(path, params=None):
     return j.get("dataBundle")
 
 
+def _get_sub_id():
+    ll = (CFG.SettingsManager.get("slt_landline") or "").strip()
+    if not ll: return ""
+    if ll.startswith("0"): return "94" + ll[1:]
+    return ll
+
 def usage_summary(): return _get("BBVAS/UsageSummary",
-                                 {"subscriberID": CFG.SUBSCRIBER_ID})
+                                 {"subscriberID": _get_sub_id()})
 def addons():        return _get("BBVAS/GetDashboardVASBundles",
-                                 {"subscriberID": CFG.SUBSCRIBER_ID})
+                                 {"subscriberID": _get_sub_id()})
 def extra_gb():      return _get("BBVAS/ExtraGB",
-                                 {"subscriberID": CFG.SUBSCRIBER_ID})
+                                 {"subscriberID": _get_sub_id()})
 def bonus_data():    return _get("BBVAS/BonusData",
-                                 {"subscriberID": CFG.SUBSCRIBER_ID})
+                                 {"subscriberID": _get_sub_id()})
 
 
 # ---------- normalisation ----------

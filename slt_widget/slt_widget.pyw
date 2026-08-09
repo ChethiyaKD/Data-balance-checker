@@ -98,9 +98,13 @@ class Widget(tk.Tk):
         self._build_menu()
 
         # ── initial fetch + timers ───────────────────────────────────
-        self._do_refresh()
-        self._reset_auto_tick()
-        self.after(30_000, self._net_poll)
+        if not CFG.SettingsManager.get("slt_email") or not CFG.SettingsManager.get("slt_landline"):
+            self.error = "Please setup an account in Settings."
+            self.after(500, self._open_settings)
+        else:
+            self._do_refresh()
+            self._reset_auto_tick()
+            self.after(30_000, self._net_poll)
 
     # ── menu ─────────────────────────────────────────────────────────
     def _build_menu(self):
@@ -131,6 +135,9 @@ class Widget(tk.Tk):
         
         self.menu.add_separator()
         self.menu.add_command(label="  Settings", command=self._open_settings)
+
+        self.menu.add_separator()
+        self.menu.add_command(label="  Exit", command=self.close)
 
     def _toggle_hide(self):
         CFG.SettingsManager.set("hide_details", self._hide_var.get())

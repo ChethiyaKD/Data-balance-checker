@@ -1,8 +1,8 @@
 """Personal build settings."""
 import os
 
-USERNAME      = "nimsara.tharinduvidyathilaka@gmail.com"
-SUBSCRIBER_ID = "94362249018"          # "94" + telephoneno[1:]
+USERNAME      = ""
+SUBSCRIBER_ID = ""          # e.g., "94" + landline_number[1:]
 CLIENT_ID     = "b7402e9d66808f762ccedbe42c20668e"  # from MySLT portal JS
 
 import json
@@ -22,7 +22,9 @@ DEFAULT_SETTINGS = {
     "low_data_threshold": 5.0,  # GB
     "start_with_windows": True,
     "remember_position": True,
-    "hide_details": False
+    "hide_details": False,
+    "slt_email": "",
+    "slt_landline": ""
 }
 
 ALL_KINDS = ["package", "addon", "extra_gb_data_summary",
@@ -88,14 +90,15 @@ class SettingsManager:
         cls.save(s)
 
 
-def get_password():
+def get_password(username):
     """Resolution order: env var -> Windows Credential Manager -> prompt once."""
+    if not username: return None
     pw = os.environ.get("MYSLT_PASSWORD")
     if pw:
         return pw
     try:
         import keyring
-        pw = keyring.get_password("myslt-widget", USERNAME)
+        pw = keyring.get_password("myslt-widget", username)
         if pw:
             return pw
     except ImportError:
@@ -103,10 +106,11 @@ def get_password():
     return None
 
 
-def store_password(pw):
+def store_password(username, pw):
+    if not username: return False
     try:
         import keyring
-        keyring.set_password("myslt-widget", USERNAME, pw)
+        keyring.set_password("myslt-widget", username, pw)
         return True
     except ImportError:
         return False
