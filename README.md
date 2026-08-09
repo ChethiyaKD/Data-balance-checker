@@ -1,5 +1,7 @@
 # SLT Data Widget
 
+> **Note**: This is my personal project. I do not collect any of your data, and the software is completely open source. If you want, you can inspect the code and package your own widget directly from the source! Not officially affiliated with any specific telecom provider.
+
 A compact, highly customizable, and privacy-focused Windows desktop widget for monitoring your SLT (Sri Lanka Telecom) Broadband data usage.
 
 ## Features
