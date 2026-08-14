@@ -1,4 +1,4 @@
-# SLT Data Widget
+# SLT Data Widget (Third-party tool)
 
 > **Note**: This is my personal project. I do not collect any of your data, and the software is completely open source. If you want, you can inspect the code and package your own widget directly from the source! Not officially affiliated with any specific telecom provider.
 
@@ -30,3 +30,8 @@ If you are a developer looking to build the widget yourself:
 pip install pyinstaller
 pyinstaller --noconsole --name "SLT Data Widget" --onefile slt_widget.pyw
 ```
+
+## Legal Disclaimer
+This is a 100% unofficial, community-driven, third-party open-source project. **This software is NOT affiliated, endorsed, authorized, or partnered with Sri Lanka Telecom PLC (SLT) in any capacity.** 
+
+This software solely acts as a local UI wrapper to interface with the public APIs strictly on behalf of the end-user. It does not circumvent billing mechanisms, DRM, or access control. All trademarks and copyrights belong to their respective corporate owners. Use of this software is entirely at your own risk per the MIT License.
