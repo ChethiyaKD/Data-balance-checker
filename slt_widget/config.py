@@ -3,7 +3,6 @@ import os
 
 USERNAME      = ""
 SUBSCRIBER_ID = ""          # e.g., "94" + landline_number[1:]
-CLIENT_ID     = "b7402e9d66808f762ccedbe42c20668e"  # from MySLT portal JS
 
 import json
 

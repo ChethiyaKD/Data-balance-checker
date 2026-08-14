@@ -143,6 +143,16 @@ class Widget(tk.Tk):
         CFG.SettingsManager.set("hide_details", self._hide_var.get())
         self.draw()
 
+    def close(self):
+        try:
+            if hasattr(self, 'menu'):
+                self.menu.unpost()
+            self.root.update()
+            self.root.destroy()
+        except:
+            pass
+        sys.exit(0)
+
     def _open_settings(self):
         import settings_ui
         if hasattr(self, "settings_win") and self.settings_win.winfo_exists():
@@ -418,10 +428,12 @@ class Widget(tk.Tk):
         _round_rect(c, pad, y, pad + cw, y + bar_h, r=bar_r,
                     fill=t["TRACK"], outline="")
         # fill
-        frac = min(r["frac"], 1.0)
-        col = t["OK"] if frac < 0.75 else (t["WARN"] if frac < 0.9 else t["BAD"])
-        if frac > 0.02:
-            fill_w = max(int(cw * frac), bar_r * 2 + 1)
+        rem_frac = 1.0 - min(r["frac"], 1.0)
+        col = t["OK"] if rem_frac > 0.25 else (t["WARN"] if rem_frac > 0.1 else t["BAD"])
+        
+        # Only draw the remaining green/yellow/red bar if they actually have data left
+        if rem_frac > 0.02:
+            fill_w = max(int(cw * rem_frac), bar_r * 2 + 1)
             _round_rect(c, pad, y, pad + fill_w, y + bar_h, r=bar_r,
                         fill=col, outline="")
 

@@ -11,13 +11,14 @@ def set_autostart(enable):
     try:
         key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path, 0, winreg.KEY_ALL_ACCESS)
         if enable:
-            pythonw = os.path.join(sys.prefix, "pythonw.exe")
-            if not os.path.exists(pythonw): # fallback
-                pythonw = "pythonw"
-            script_path = os.path.abspath("slt_widget.pyw")
-            
-            # Use pythonw to prevent command prompt from showing up
-            cmd = f'"{pythonw}" "{script_path}"'
+            if getattr(sys, 'frozen', False):
+                cmd = f'"{sys.executable}"'
+            else:
+                pythonw = os.path.join(sys.prefix, "pythonw.exe")
+                if not os.path.exists(pythonw): # fallback
+                    pythonw = "pythonw"
+                script_path = os.path.abspath("slt_widget.pyw")
+                cmd = f'"{pythonw}" "{script_path}"'
             winreg.SetValueEx(key, app_name, 0, winreg.REG_SZ, cmd)
         else:
             try:

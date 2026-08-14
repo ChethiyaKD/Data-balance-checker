@@ -80,7 +80,7 @@ def discover_client_id():
 
 
 def client_id():
-    if CFG.CLIENT_ID:
+    if hasattr(CFG, 'CLIENT_ID') and CFG.CLIENT_ID:
         return CFG.CLIENT_ID
     os.makedirs(CFG.STATE_DIR, exist_ok=True)
     if os.path.exists(CIDFILE):
