@@ -163,10 +163,7 @@ def _get(path, params=None):
 
 
 def _get_sub_id():
-    ll = (CFG.SettingsManager.get("slt_landline") or "").strip()
-    if not ll: return ""
-    if ll.startswith("0"): return "94" + ll[1:]
-    return ll
+    return (CFG.SettingsManager.get("slt_subscriber_id") or "").strip()
 
 def usage_summary(): return _get("BBVAS/UsageSummary",
                                  {"subscriberID": _get_sub_id()})

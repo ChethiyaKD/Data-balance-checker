@@ -18,10 +18,10 @@ A compact, highly customizable, and privacy-focused Windows desktop widget for m
 The easiest way to use the widget is to run the standalone executable.
 1. Download the compiled `SLT Data Widget.exe`.
 2. Double click the file. The widget will force open a **Settings** wizard.
-3. Provide your standard MySLT Email, Password, and your landline number (e.g. `011XXXXXXX`).
+3. Provide your standard MySLT Email, Password, and your Broadband Subscriber ID (shown on the MySLT dashboard, e.g. `RK1234567`).
 4. Click **Save & Login**. The background sync will immediately start!
 
-### Building from Source
+### Building from Source (Windows)
 If you are a developer looking to build the widget yourself:
 1. Clone the repository and install the standard `tkinter`, `keyring`, and `win10toast` library requirements.
 2. Run the `slt_widget.pyw` module to launch the Python UI instance.
@@ -30,6 +30,13 @@ If you are a developer looking to build the widget yourself:
 pip install pyinstaller
 pyinstaller --noconsole --name "SLT Data Widget" --onefile slt_widget.pyw
 ```
+
+### macOS Menu Bar Widget
+A native menu bar build is also available, showing the remaining percentage directly in the menu bar.
+1. `pip install rumps keyring`
+2. Run `python3 slt_widget/mac_widget.py`.
+3. Use the menu to set your MySLT Email, Password, and Broadband Subscriber ID, then Refresh Now.
+4. "Start at Login" installs a `launchctl` LaunchAgent instead of a Windows Registry entry.
 
 ## Legal Disclaimer
 This is a 100% unofficial, community-driven, third-party open-source project. **This software is NOT affiliated, endorsed, authorized, or partnered with Sri Lanka Telecom PLC (SLT) in any capacity.** 

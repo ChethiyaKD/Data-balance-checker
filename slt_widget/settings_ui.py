@@ -124,11 +124,11 @@ class SettingsWindow(tk.Toplevel):
                 
         self.btn_eye.bind("<Button-1>", _toggle_eye)
         
-        tk.Label(f_acc, text="Landline Number (e.g. 011...):", font=("Segoe UI", 10), bg=t["BG2"], fg=t["DIM"]).pack(anchor="w")
-        self.var_landline = tk.StringVar(value=(CFG.SettingsManager.get("slt_landline") or ""))
+        tk.Label(f_acc, text="Broadband Subscriber ID (e.g. RK1234567):", font=("Segoe UI", 10), bg=t["BG2"], fg=t["DIM"]).pack(anchor="w")
+        self.var_landline = tk.StringVar(value=(CFG.SettingsManager.get("slt_subscriber_id") or ""))
         tk.Entry(f_acc, textvariable=self.var_landline, bg=t["TRACK"], fg=t["FG"], font=("Segoe UI", 10)).pack(anchor="w", fill="x", pady=(0, 15))
-        
-        tk.Label(f_acc, text="We require your landline number to resolve your SLT Subscriber ID.\nWe do not collect any of this data.", font=("Segoe UI", 9), bg=t["BG2"], fg=t["DIM"], justify="left", wraplength=320).pack(anchor="w", pady=(0, 15))
+
+        tk.Label(f_acc, text="Find this on the MySLT dashboard under your broadband account.\nWe do not collect any of this data.", font=("Segoe UI", 9), bg=t["BG2"], fg=t["DIM"], justify="left", wraplength=320).pack(anchor="w", pady=(0, 15))
         
         self.btn_save = tk.Button(f_acc, text="Save & Login", bg=t["ACCENT"], fg=t["BG2"], font=("Segoe UI", 10, "bold"), command=self._save_account, relief="flat", padx=10, pady=2)
         self.btn_save.pack(anchor="w")
@@ -227,9 +227,9 @@ class SettingsWindow(tk.Toplevel):
         email = self.var_email.get().strip()
         pw = self.var_pw.get()
         ll = self.var_landline.get().strip()
-        
+
         if not email or not ll:
-            self.lbl_status.config(text="Email and Landline required.", fg=self.parent_main.theme["BAD"])
+            self.lbl_status.config(text="Email and Subscriber ID required.", fg=self.parent_main.theme["BAD"])
             return
         if not pw:
             # We must strictly demand a password on setup because keyring might be empty
@@ -237,7 +237,7 @@ class SettingsWindow(tk.Toplevel):
             return
             
         CFG.SettingsManager.set("slt_email", email)
-        CFG.SettingsManager.set("slt_landline", ll)
+        CFG.SettingsManager.set("slt_subscriber_id", ll)
         
         if pw:
             CFG.store_password(email, pw)
