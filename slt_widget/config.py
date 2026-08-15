@@ -1,12 +1,16 @@
 """Personal build settings."""
 import os
+import sys
 
 USERNAME      = ""
-SUBSCRIBER_ID = ""          # e.g., "94" + landline_number[1:]
+SUBSCRIBER_ID = ""
 
 import json
 
-STATE_DIR = os.path.join(os.environ.get("APPDATA", os.path.expanduser("~")), "SLTWidget")
+if sys.platform == "darwin":
+    STATE_DIR = os.path.join(os.path.expanduser("~/Library/Application Support"), "SLTWidget")
+else:
+    STATE_DIR = os.path.join(os.environ.get("APPDATA", os.path.expanduser("~")), "SLTWidget")
 SETTINGS_FILE = os.path.join(STATE_DIR, "settings.json")
 POS_FILE      = os.path.join(STATE_DIR, "pos.json")
 
@@ -23,7 +27,7 @@ DEFAULT_SETTINGS = {
     "remember_position": True,
     "hide_details": False,
     "slt_email": "",
-    "slt_landline": ""
+    "slt_subscriber_id": ""
 }
 
 ALL_KINDS = ["package", "addon", "extra_gb_data_summary",
